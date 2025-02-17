@@ -6,7 +6,7 @@ const link = document.getElementById('link')
 const logout = document.getElementById('logout')
 const up_password = document.getElementById('up-password')
 const up_password_div = document.getElementById('up-password-div')
-
+const params = new URLSearchParams(window.location.search);
 
 if (token) {
     console.log("Token 存在:", token);
@@ -22,9 +22,7 @@ logout.addEventListener('click', () => {
     window.location.href = './index.html';
 })
 
-up_password.addEventListener('click', () => {
-    //
-
+function up_password_function() {
     // 禁用按钮 
     up_password.disabled = true
 
@@ -111,4 +109,13 @@ up_password.addEventListener('click', () => {
 
 
     })
-})
+}
+
+
+up_password.addEventListener('click', up_password_function)
+
+const type = params.get('type')
+
+if (type == 'resetpassword') {
+    up_password_function()
+} 

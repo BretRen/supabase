@@ -33,6 +33,7 @@ sub.addEventListener('click', async () => {
     console.log(data)
     if (errorSupabase) {
         error.innerText = "Login failed: " + errorSupabase.message;
+        error.innerHTML += '<br><a href="./forgotpassword.html">forgot password</a>'
         sub.disabled = false; // 失败时重新启用按钮
         return;
     }else {
