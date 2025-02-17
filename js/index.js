@@ -1,5 +1,6 @@
 // 导入创建 Supabase 客户端的函数
 import { createClientSupabase } from './config/supabse.js'
+import { getNovel } from './index/novel.js';
 
 // 创建 Supabase 客户端
 const supabase = createClientSupabase()
@@ -139,3 +140,22 @@ const type = params.get('type')
 if (type == 'resetpassword') {
     up_password_function()
 }
+
+
+
+const novel = document.getElementById('novel')
+const novelButton = document.getElementById('novelButton')
+
+let showNovel = false
+
+novelButton.addEventListener('click',async () => {
+    showNovel =!showNovel
+    await getNovel(novel, novelButton)
+
+    if (showNovel) {
+        novel.style.display = 'block'
+    } else {
+        novel.style.display = 'none'
+    }
+})
+
