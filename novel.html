@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说</title>
+</head>
+
+<body>
+    <h1 id="title"></h1>
+
+    <p id="introduction"></p>
+    <br>
+    <h2>正文</h2>
+    <p id="text"></p>
+    <br>
+    <p id="created_at"></p>
+
+    <a href="/index.html">Back</a>
+    <script type="module">
+        // 导入创建 Supabase 客户端的函数
+        import { createClientSupabase } from './js/config/supabse';
+
+        // 创建 Supabase 客户端
+        const supabase = createClientSupabase();
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const token = localStorage.getItem('sb-lysuqcspfpugxozttfek-auth-token');
+        if (!token) {
+            alert("请先登录");
+            window.location.href = "/login.html"
+        }
+
+        const { data, error } = await supabase
+            .from('novel')
+            .select('*')
+            .eq("id", id)
+
+        if (error) {
+            console.error('获取文章列表失败:', error);
+            alert("获取文章列表失败");
+            
+        } else if (data.length === 0) {
+            alert("你没有权限或者没有小说可显示");
+            window.location.href = "/index.html"
+        }
+
+        const title = data[0].title
+        const created_at = data[0].created_at
+        const introduction = data[0].introduction
+        const text = data[0].text
+
+        const created_atDOM = document.getElementById("created_at")
+        const titleDOM = document.getElementById("title")
+        const introductionDOM = document.getElementById("introduction")
+        const textDOM = document.getElementById("text")
+
+        titleDOM.innerText = title
+        created_atDOM.innerText = "创建时间：" + created_at
+        introductionDOM.innerText = "简介：" + introduction
+        textDOM.innerText = text
+
+
+        document.title = "小说 - " + title
+        console.log(title)
+
+
+
+    </script>
+</body>
+
+</html>

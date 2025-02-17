@@ -64,8 +64,12 @@ function renderNovels(novel, data) {
         const title = document.createElement('h3');
         const introduction = document.createElement('p');
         const created_at = document.createElement('p');
+        const link = document.createElement('a')
 
-        title.textContent = item.title;
+        link.href = "/novel.html?id=" + item.id;
+
+        link.textContent = item.title;
+        title.appendChild(link);
         introduction.textContent = "简介：" + item.introduction;
         created_at.textContent = "创建时间：" + new Date(item.created_at).toLocaleString();
 
