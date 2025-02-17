@@ -24,12 +24,10 @@ sub.addEventListener('click', async () => {
         error.innerHTML += "<br>Password must be at least 8 characters long"
         return
     }
-    const hcaptchaToken = await hcaptcha.execute();
     sub.disabled = true
     const { data, error: errorSupabase } = await supabase.auth.signInWithPassword({
         email: email.value,
         password: password.value,
-        hcaptchaToken: hcaptchaToken
       })
       
     console.log(data)
