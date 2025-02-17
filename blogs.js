@@ -7,74 +7,86 @@ blogs.innerText = "加载中"
 let pageInOne = 2
 
 const params = new URLSearchParams(window.location.search);
-let pages = Number(params.get('pages'))
+let pages = Number(params.get('pages')) || 1;
 
-if (!pages) {
-    pages = 1;
-    console.log("初始化")
-}
+// Supabase 客户端初始化
+const supabase = createClient('https://lysuqcspfpugxozttfek.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5c3VxY3NwZnB1Z3hvenR0ZmVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjM3NTYsImV4cCI6MjA0OTY5OTc1Nn0.LFafqHaLxS5r3yynw8EydY0VjGlVI7jwr7cr4ovg7P4');
 
-// Create a single supabase client for interacting with your database
-const supabase = createClient('https://lysuqcspfpugxozttfek.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5c3VxY3NwZnB1Z3hvenR0ZmVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjM3NTYsImV4cCI6MjA0OTY5OTc1Nn0.LFafqHaLxS5r3yynw8EydY0VjGlVI7jwr7cr4ovg7P4')
+async function fetchBlogs() {
+    try {
+        // 获取总博客数
+        const { count, error: countError } = await supabase
+            .from('blogs')
+            .select('*', { count: 'exact', head: true });
 
-const { count, error2 } = await supabase
-  .from('blogs')   // 选择表
-  .select('*', { count: 'exact', head: true }); // 只返回 count，不返回数据
+        if (countError) {
+            console.error('获取博客总数失败:', countError);
+            blogs.innerText = "加载失败，请稍后重试";
+            return;
+        }
 
+        if (count < pageInOne) {
+            pageInOne = count;
+        }
 
-if (count < pageInOne) {
-    pageInOne = count
-    console.log("test")
-}
+        // 获取当前页的博客
+        const { data, error } = await supabase
+            .from('blogs')
+            .select()
+            .range((pages - 1) * pageInOne, pages * pageInOne - 1);
 
-const { data, error } = await supabase
-  .from('blogs')
-  .select()
-  .range((pages - 1) * pageInOne, pages * pageInOne - 1)
-console.log(data)
+        if (error) {
+            console.error('获取博客失败:', error);
+            blogs.innerText = "加载失败，请稍后重试";
+            return;
+        }
 
+        blogs.innerText = "";
+        data.forEach((item) => {
+            let text = item.text.length > 10 ? item.text.slice(0, 10) + '...' : item.text;
 
+            let blogDiv = document.createElement('div');
+            blogDiv.classList.add('blog');
 
-data.forEach((item) => {
-    if (blogs.textContent == "加载中"){
-        blogs.innerText = ""
+            let titleElement = document.createElement('h2');
+            let titleLink = document.createElement('a');
+            titleLink.href = `/blog.html?id=${item.id}`;
+            titleLink.textContent = item.title;
+            titleElement.appendChild(titleLink);
+
+            let textElement = document.createElement('p');
+            textElement.textContent = text;
+
+            let dateElement = document.createElement('span');
+            dateElement.textContent = `创建时间：${item.created_at}`;
+
+            blogDiv.appendChild(titleElement);
+            blogDiv.appendChild(textElement);
+            blogDiv.appendChild(dateElement);
+
+            blogs.appendChild(blogDiv);
+            blogs.appendChild(document.createElement('br'));
+        });
+
+        // 处理分页逻辑
+        let totalPages = Math.ceil(count / pageInOne);
+        let nextpageHTML = "";
+
+        if (pages > 1) {
+            nextpageHTML += `<a href="/blogs.html?pages=${pages - 1}">上一页</a> `;
+        }
+        if (pages < totalPages) {
+            nextpageHTML += `<a href="/blogs.html?pages=${pages + 1}">下一页</a>`;
+        }
+
+        if (totalPages > 1) {
+            page.innerHTML = `第 ${pages} 页 / 共 ${totalPages} 页<br>${nextpageHTML}`;
+        }
+    } catch (error) {
+        console.error('加载博客时发生错误:', error);
+        blogs.innerText = "加载失败，请稍后重试";
     }
-    console.log(item)
-    let text = null
-    if (item.text.length > 10) {
-        text = item.text.slice(0, 10) + '...'
-    }else {
-        text = item.text
-    }
-    
-    blogs.innerHTML += `
-    <br>
-    <div class="blog">
-        <h2><a href="/blog.html?id=${item.id}">${item.title}<a/></h2>
-        <p>${text}</p>
-        <span>创建时间：${item.created_at}/</span>
-    </div>
-    <br>
-    `
+}
 
-})
-let nextpage = null
-// pages
-if (pages === 1 ){
-    nextpage = `<a href="/blogs.html?pages=${pages + 1}">下一页</a>`
-}else if (Math.ceil(count / pageInOne) ==  pages){
-    nextpage = `<a href="/blogs.html?pages=${pages - 1}">上一页</a>`
-}
-else {
-    nextpage = `<a href="/blogs.html?pages=${pages - 1}">上一页</a> <a href="/blogs.html?pages=${pages + 1}">下一页</a>`
-}
-if (pageInOne !== count){
-    page.innerHTML = `
-第 ${pages} 页 / 共 ${Math.ceil(count / pageInOne)} 页
-${nextpage}
-`
-console.log(count)
-console.log(pageInOne)
-console.log(pages)
-
-}
+// 运行
+fetchBlogs();
