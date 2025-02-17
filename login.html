@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
+</head>
+
+<body>
+    邮箱 <input type="email" id="email">
+    <br>
+    密码 <input type="password" id="password">
+    <br>
+    <div class="h-captcha" data-sitekey="c95aa2f2-455c-4818-ab6e-0faa5c1853ec" data-hostname="localhost"></div>
+    <!-- <div class="h-captcha" data-sitekey="YOUR_SITE_KEY" ></div> -->
+
+    <button id="sub">登录</button>
+    <p style="color: red;" id="error"></p>
+    <script type="module" src="./js/login.js"></script>
+</body>
+
+</html>
