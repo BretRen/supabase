@@ -1,7 +1,11 @@
 import { createClientSupabase } from './config/supabse.js'
 const supabase = createClientSupabase()
 
+const token = localStorage.getItem('sb-lysuqcspfpugxozttfek-auth-token');
 
+if (token) {
+    window.location.href = '/'
+}
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
