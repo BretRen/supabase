@@ -1,6 +1,7 @@
 import { createClientSupabase } from './config/supabse.js'
 
-import DOMPurify from 'dompurify';
+import DOMPurify from "https://esm.sh/dompurify@3.0.9";
+
 const blog = document.getElementById('blog')
 
 const params = new URLSearchParams(window.location.search);
